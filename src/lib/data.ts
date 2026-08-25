@@ -8,11 +8,22 @@ export const hasSupabaseEnv = Boolean(
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY),
 );
 
-export const getVehicles = cache(async (): Promise<Vehicle[]> => {
+type DataAccess = "public" | "authenticated";
+
+async function createDataClient(access: DataAccess) {
+  if (access === "authenticated") {
+    const { createServerSupabaseClient } = await import("@/lib/supabase/server");
+    return createServerSupabaseClient();
+  }
+
+  const { createPublicSupabaseClient } = await import("@/lib/supabase/public");
+  return createPublicSupabaseClient();
+}
+
+export const getVehicles = cache(async (access: DataAccess = "public"): Promise<Vehicle[]> => {
   if (!hasSupabaseEnv) return demoVehicles;
 
-  const { createServerSupabaseClient } = await import("@/lib/supabase/server");
-  const supabase = await createServerSupabaseClient();
+  const supabase = await createDataClient(access);
   const { data, error } = await supabase
     .from("vehicles")
     .select("*, vehicle_images(*), vehicle_features(name)")
@@ -29,27 +40,24 @@ export const getVehicleBySlug = cache(async (slug: string) => {
 
 export const getLaunches = cache(async () => {
   if (!hasSupabaseEnv) return demoLaunches;
-  const { createServerSupabaseClient } = await import("@/lib/supabase/server");
-  const supabase = await createServerSupabaseClient();
+  const supabase = await createDataClient("public");
   const { data, error } = await supabase.from("launches").select("id,slug,title,subtitle,excerpt,cover_image_url,published_at,featured,vehicles(slug)").eq("active", true).not("published_at", "is", null).order("published_at", { ascending: false });
   if (error || !data) return [];
   return data.map((item) => ({ id: item.id, slug: item.slug, title: item.title, subtitle: item.subtitle ?? "", excerpt: item.excerpt ?? "", image: item.cover_image_url, date: item.published_at ?? new Date().toISOString(), featured: item.featured, vehicleSlug: Array.isArray(item.vehicles) ? item.vehicles[0]?.slug : (item.vehicles as { slug?: string } | null)?.slug }));
 });
 
-export const getSiteSettings = cache(async () => {
+export const getSiteSettings = cache(async (access: DataAccess = "public") => {
   if (!hasSupabaseEnv) return demoSettings;
-  const { createServerSupabaseClient } = await import("@/lib/supabase/server");
-  const supabase = await createServerSupabaseClient();
+  const supabase = await createDataClient(access);
   const [{ data: rows }, { data: social }] = await Promise.all([supabase.from("site_settings").select("key,value").eq("is_public", true), supabase.from("social_links").select("platform,url").eq("active", true).order("position")]);
   if (!rows?.length) return demoSettings;
   const values = Object.fromEntries(rows.map((row) => [row.key, row.value]));
   return { companyName: String(values.company_name ?? demoSettings.companyName), tradeName: String(values.trade_name ?? demoSettings.tradeName), slogan: String(values.slogan ?? demoSettings.slogan), address: String(values.address ?? demoSettings.address), city: String(values.city ?? demoSettings.city), state: String(values.state ?? demoSettings.state), phone: String(values.phone ?? demoSettings.phone), email: String(values.email ?? demoSettings.email), hours: String(values.hours ?? demoSettings.hours), about: String(values.about ?? demoSettings.about), logoUrl: String(values.logo_url ?? ""), alternateLogoUrl: String(values.alternate_logo_url ?? ""), faviconUrl: String(values.favicon_url ?? ""), mapsUrl: String(values.maps_url ?? ""), heroUrl: String(values.hero_url ?? demoSettings.heroUrl), primaryColor: String(values.primary_color ?? demoSettings.primaryColor), accentColor: String(values.accent_color ?? demoSettings.accentColor), showSoldVehicles: Boolean(values.show_sold_vehicles), social: Object.fromEntries((social ?? []).map((item) => [item.platform, item.url])) };
 });
 
-export const getWhatsAppNumbers = cache(async () => {
+export const getWhatsAppNumbers = cache(async (access: DataAccess = "public") => {
   if (!hasSupabaseEnv) return demoWhatsApps;
-  const { createServerSupabaseClient } = await import("@/lib/supabase/server");
-  const supabase = await createServerSupabaseClient();
+  const supabase = await createDataClient(access);
   const { data, error } = await supabase.from("whatsapp_numbers").select("*").order("priority");
   if (error || !data) return [];
   return data.map((item) => ({ id: item.id, name: item.name, responsible: item.responsible, number: item.number, sector: item.sector as "sales" | "rental" | "support", defaultMessage: item.default_message, active: item.active, primary: item.is_primary, priority: item.priority }));
@@ -57,8 +65,7 @@ export const getWhatsAppNumbers = cache(async () => {
 
 export const getActiveBanners = cache(async (): Promise<AdminBanner[]> => {
   if (!hasSupabaseEnv) return demoBanners.filter((item) => item.active).sort((a, b) => a.order - b.order);
-  const { createServerSupabaseClient } = await import("@/lib/supabase/server");
-  const supabase = await createServerSupabaseClient();
+  const supabase = await createDataClient("public");
   const { data, error } = await supabase.from("banners").select("*").eq("active", true).order("position");
   if (error || !data) return [];
   return data.map((item) => ({ id: item.id, title: item.title, subtitle: item.subtitle ?? "", desktop: item.desktop_image_url, mobile: item.mobile_image_url ?? item.desktop_image_url, cta: item.cta_label ?? "Explorar", url: item.cta_url ?? "/veiculos", active: item.active, order: item.position }));
