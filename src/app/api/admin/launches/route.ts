@@ -1,7 +1,5 @@
-import { z } from "zod";
 import { getAdminContext, unauthorized } from "@/lib/auth";
-
-export const launchSchema = z.object({ id: z.string().uuid().optional(), title: z.string().min(3), slug: z.string().regex(/^[a-z0-9-]+$/), subtitle: z.string(), excerpt: z.string().min(10), image: z.string(), date: z.string(), featured: z.boolean(), published: z.boolean(), video: z.string().optional(), vehicleSlug: z.string().optional(), gallery: z.array(z.string()).default([]) });
+import { launchSchema, resolveVehicle } from "@/lib/admin/launch-input";
 
 export async function POST(request: Request) {
   const context = await getAdminContext(["owner", "admin", "manager"]);
@@ -16,5 +14,3 @@ export async function POST(request: Request) {
     return Response.json(data, { status: 201 });
   } catch (error) { return Response.json({ error: error instanceof Error ? error.message : "Dados inválidos." }, { status: 400 }); }
 }
-
-export async function resolveVehicle(supabase: NonNullable<Awaited<ReturnType<typeof getAdminContext>>>["supabase"], slug?: string) { if (!supabase || !slug) return null; const { data } = await supabase.from("vehicles").select("id").eq("slug", slug).maybeSingle(); return data?.id ?? null; }

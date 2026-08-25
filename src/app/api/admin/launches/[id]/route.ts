@@ -1,5 +1,5 @@
 import { getAdminContext, unauthorized } from "@/lib/auth";
-import { launchSchema, resolveVehicle } from "../route";
+import { launchSchema, resolveVehicle } from "@/lib/admin/launch-input";
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const context = await getAdminContext(["owner", "admin", "manager"]);
