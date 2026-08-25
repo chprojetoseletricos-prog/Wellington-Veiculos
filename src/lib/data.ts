@@ -4,7 +4,8 @@ import type { AdminAnalytics, AdminBanner, AdminConversation, AdminLaunch, Admin
 
 export const hasSupabaseEnv = Boolean(
   process.env.NEXT_PUBLIC_SUPABASE_URL &&
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    (process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY),
 );
 
 export const getVehicles = cache(async (): Promise<Vehicle[]> => {
@@ -111,7 +112,7 @@ export const getAdminBannersData = cache(async (): Promise<AdminBanner[] | null>
 });
 
 export const getAdminUsersData = cache(async (): Promise<AdminUser[] | null> => {
-  if (!hasSupabaseEnv || !process.env.SUPABASE_SERVICE_ROLE_KEY) return null;
+  if (!hasSupabaseEnv || !(process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY)) return null;
   const { createServerSupabaseClient } = await import("@/lib/supabase/server");
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();

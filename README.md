@@ -112,8 +112,8 @@ O trigger da migration já cria o registro em `profiles`. Depois, entre em `/aut
 | Variável | Exposição | Uso |
 | --- | --- | --- |
 | `NEXT_PUBLIC_SUPABASE_URL` | navegador e servidor | URL do projeto Supabase |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | navegador e servidor | acesso público protegido por RLS |
-| `SUPABASE_SERVICE_ROLE_KEY` | somente servidor | convite administrativo; nunca expor no frontend |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | navegador e servidor | acesso público protegido por RLS (`anon` também é aceito) |
+| `SUPABASE_SECRET_KEY` | somente servidor | convite administrativo; `service_role` também é aceito; nunca expor no frontend |
 | `NEXT_PUBLIC_SITE_URL` | navegador e servidor | canonical, Open Graph e sitemap |
 
 O `.gitignore` bloqueia `.env.local` e os demais arquivos `.env`, exceto `.env.example`.
@@ -176,4 +176,4 @@ supabase/
 - Visitantes usam sessão anônima Supabase e só leem a própria conversa.
 - Veículo vendido, alugado ou arquivado não é apagado automaticamente.
 - Exclusões permanentes exigem papel elevado e confirmação na interface.
-- A `SUPABASE_SERVICE_ROLE_KEY` é importada apenas por módulos de servidor.
+- A `SUPABASE_SECRET_KEY` (ou a chave legada `SUPABASE_SERVICE_ROLE_KEY`) é importada apenas por módulos de servidor.
