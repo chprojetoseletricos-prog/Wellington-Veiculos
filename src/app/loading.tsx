@@ -1,0 +1,1 @@
+export default function Loading() { return <div className="min-h-screen bg-canvas pt-32"><div className="page-shell animate-pulse"><div className="h-3 w-28 bg-line" /><div className="mt-5 h-16 max-w-2xl bg-surface" /><div className="mt-12 aspect-[16/7] bg-surface" /></div></div>; }

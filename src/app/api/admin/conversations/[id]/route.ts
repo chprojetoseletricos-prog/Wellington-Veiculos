@@ -1,0 +1,4 @@
+import { z } from "zod";
+import { getAdminContext, unauthorized } from "@/lib/auth";
+const schema = z.object({ status: z.enum(["open", "pending", "closed"]).optional(), take: z.boolean().optional() });
+export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) { const context = await getAdminContext(["owner", "admin", "manager", "sales", "support"]); if (!context) return unauthorized(); const { id } = await params; const input = schema.parse(await request.json()); if (context.demo) return Response.json({ ok: true, demo: true }); const update: { status?: string; assigned_to?: string } = {}; if (input.status) update.status = input.status; if (input.take) update.assigned_to = context.user.id; const { error } = await context.supabase.from("conversations").update(update).eq("id", id); return error ? Response.json({ error: error.message }, { status: 400 }) : Response.json({ ok: true }); }

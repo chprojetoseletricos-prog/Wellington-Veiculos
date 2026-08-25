@@ -1,0 +1,2 @@
+"use client";
+export default function ErrorPage({ reset }: { error: Error & { digest?: string }; reset: () => void }) { return <div className="grid min-h-screen place-items-center bg-canvas p-6 text-center text-ink"><div><p className="eyebrow text-signal">Falha inesperada</p><h1 className="mt-4 text-4xl font-semibold">Não foi possível carregar esta página.</h1><p className="mt-4 text-sm text-muted">Verifique sua conexão e tente novamente.</p><button onClick={reset} className="mt-7 bg-acid px-5 py-3 text-sm font-semibold text-canvas">Tentar novamente</button></div></div>; }

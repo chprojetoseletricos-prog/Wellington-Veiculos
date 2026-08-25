@@ -1,0 +1,3 @@
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
+export default function NotFound() { return <main className="grid min-h-screen place-items-center bg-canvas p-6 text-center text-ink"><div><p className="font-mono text-xs text-acid">404</p><h1 className="editorial-title mt-5 text-6xl md:text-8xl">Rota não encontrada.</h1><p className="mt-5 text-sm text-muted">A estrada termina aqui, mas o catálogo continua disponível.</p><Link href="/" className="mt-8 inline-flex items-center gap-2 border-b border-acid pb-2 text-sm"><ArrowLeft size={16} /> Voltar ao início</Link></div></main>; }

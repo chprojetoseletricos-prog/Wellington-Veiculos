@@ -1,0 +1,136 @@
+@import "tailwindcss";
+
+:root {
+  --ink: #f5f5f3;
+  --muted: #9b9fa4;
+  --line: #282c30;
+  --canvas: #08090a;
+  --surface: #121518;
+  --surface-strong: #191d20;
+  --acid: #dfff3f;
+  --signal: #f06b4f;
+  --background: var(--canvas);
+  --foreground: var(--ink);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-surface-strong: var(--surface-strong);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-acid: var(--acid);
+  --color-signal: var(--signal);
+  --font-sans: var(--font-archivo);
+  --font-mono: var(--font-space-mono);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--canvas);
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-archivo), Arial, sans-serif;
+  overflow-x: hidden;
+}
+
+::selection {
+  color: #08090a;
+  background: var(--acid);
+}
+
+a,
+button,
+input,
+select,
+textarea {
+  outline-offset: 4px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--acid);
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.editorial-title {
+  font-weight: 700;
+  line-height: 0.92;
+  letter-spacing: 0;
+  text-wrap: balance;
+}
+
+.eyebrow {
+  font-family: var(--font-space-mono), monospace;
+  font-size: 0.68rem;
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.page-shell {
+  width: min(100% - 32px, 1440px);
+  margin-inline: auto;
+}
+
+.hairline {
+  border-color: color-mix(in srgb, var(--line) 85%, transparent);
+}
+
+.image-noise::after {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.16'/%3E%3C/svg%3E");
+  opacity: 0.07;
+  mix-blend-mode: soft-light;
+}
+
+.wv-toast {
+  border: 1px solid var(--line) !important;
+  border-radius: 4px !important;
+  background: var(--surface-strong) !important;
+  color: var(--ink) !important;
+}
+
+input,
+select,
+textarea {
+  color-scheme: dark;
+}
+
+@media (min-width: 768px) {
+  .page-shell {
+    width: min(100% - 64px, 1440px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
